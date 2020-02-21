@@ -117,3 +117,107 @@ function viewEmployees() {
     });
 }
 
+function createChoices() {
+    inquirer
+        .prompt({
+            name: "createChoices",
+            type: "list",
+            message: "What would you like to create?",
+            choices: [
+                "Departments",
+                "Roles",
+                "Employees",
+                "exit"
+            ]
+        })
+        .then(function(answer) {
+            switch (answer.action) {
+            case "Departments":
+                createDepartments();
+                break;
+
+            case "Roles":
+                createRoles();
+                break;
+
+            case "Employees":
+                createEmployees();
+                break;
+
+            case "Exit":
+                connection.end();
+                break;
+            }
+        });
+}
+
+function updateChoices() {
+    inquirer
+        .prompt({
+            name: "updateChoices",
+            type: "list",
+            message: "What would you like to update?",
+            choices: [
+                "Departments",
+                "Roles",
+                "Employees",
+                "exit"
+            ]
+        })
+        .then(function(answer) {
+            switch (answer.action) {
+            case "Departments":
+                updateDepartments();
+                break;
+
+            case "Roles":
+                updateRoles();
+                break;
+
+            case "Employees":
+                updateEmployees();
+                break;
+
+            case "Exit":
+                connection.end();
+                break;
+            }
+        });
+}
+
+function deleteChoices() {
+    inquirer
+        .prompt({
+            name: "deleteChoices",
+            type: "list",
+            message: "What would you like to delete?",
+            choices: [
+                "Departments",
+                "Roles",
+                "Employees",
+                "exit"
+            ]
+        })
+        .then(function(answer) {
+            switch (answer.action) {
+            case "Departments":
+                deleteDepartments();
+                break;
+
+            case "Roles":
+                deleteRoles();
+                break;
+
+            case "Employees":
+                deleteEmployees();
+                break;
+
+            case "Exit":
+                connection.end();
+                break;
+            }
+        });
+}
+
+
+
