@@ -184,6 +184,44 @@ function createDepartments() {
 }
 
 
+function createRoles() {
+    inquirer
+        .prompt([
+        {
+            name: "title",
+            type: "input",
+            message: "What is the title of the new Role?"
+        },
+        {
+            name: "salary",
+            type: "input",
+            message: "What is the salary of the new Role?"
+        },
+        {
+            name: "department_id",
+            type: "input",
+            message: "What is the department id of the new Role?"
+        }
+        ])
+        .then(function(answer) {
+            connection.query(
+                "INSERT INTO Roles SET ?",
+                {
+                    title: answer.title,
+                    salary: answer.salary,
+                    department_id: answer.department_id,
+                },
+                function(err) {
+                    if (err) throw err;
+                    console.log("Your Role was created successfully!");
+                    // re-prompt the user for if they want to bid or post
+                    start();
+                }
+            )
+        })
+}
+
+
 function createEmployees() {
     inquirer
         .prompt([
