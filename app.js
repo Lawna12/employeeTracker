@@ -21,14 +21,16 @@ connection.connect(function(err){
 
 function start() {
     inquirer
-        .prompt({
-            name: "CRUD",
-            type: "list",
-            message: "What would you like to do?",
-            choices: ["View", "Create", "Update", "Delete", "Exit"]
-        })
+        .prompt([
+            {
+                name: "CRUD",
+                type: "list",
+                message: "What would you like to do?",
+                choices: ["View", "Create", "Update", "Delete", "Exit"]
+            }
+        ])
         .then(function(answer) {
-            switch (answer.action) {
+            switch (answer.CRUD) {
             case "View":
                 viewChoices();
                 break;
@@ -53,9 +55,11 @@ function start() {
 }
 
 function viewChoices() {
+    console.log("you're here")
     inquirer
-        .prompt({
-            name: "viewChoices",
+        .prompt([
+        {
+            name: "viewChoice",
             type: "list",
             message: "What would you like to view?",
             choices: [
@@ -64,9 +68,10 @@ function viewChoices() {
                 "Employees",
                 "exit"
             ]
-        })
+        }
+        ])
         .then(function(answer) {
-            switch (answer.action) {
+            switch (answer.viewChoice) {
             case "Departments":
                 viewDepartments();
                 break;
@@ -92,7 +97,7 @@ function viewDepartments() {
       if (err) throw err;
       // Log all results of the SELECT statement
       console.log(res);
-      connection.end();
+      start();
     });
   }
 
@@ -102,7 +107,7 @@ function viewRoles() {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.log(res);
-        connection.end();
+        start();
     });
 }
 
@@ -113,13 +118,14 @@ function viewEmployees() {
         if (err) throw err;
         // Log all results of the SELECT statement
         console.log(res);
-        connection.end();
+        start();
     });
 }
 
 function createChoices() {
     inquirer
-        .prompt({
+        .prompt([
+        {
             name: "createChoices",
             type: "list",
             message: "What would you like to create?",
@@ -129,9 +135,10 @@ function createChoices() {
                 "Employees",
                 "exit"
             ]
-        })
+        }
+        ])
         .then(function(answer) {
-            switch (answer.action) {
+            switch (answer.createChoices) {
             case "Departments":
                 createDepartments();
                 break;
@@ -151,6 +158,75 @@ function createChoices() {
         });
 }
 
+function createDepartments() {
+    inquirer
+        .prompt([
+        {
+            name: "newDept",
+            type: "input",
+            message: "What is the name of the new Department?"
+        },
+        ])
+        .then(function(answer) {
+            connection.query(
+                "INSERT INTO Departments SET ?",
+                {
+                    name: answer.newDept
+                },
+                function(err) {
+                    if (err) throw err;
+                    console.log("Your Dept was created successfully!");
+                    // re-prompt the user for if they want to bid or post
+                    start();
+                }
+            )
+        })
+}
+
+
+function createEmployees() {
+    inquirer
+        .prompt([
+        {
+            name: "first_name",
+            type: "input",
+            message: "What is the first name of the new Employee?"
+        },
+        {
+            name: "last_name",
+            type: "input",
+            message: "What is the last name of the new Employee?"
+        },
+        {
+            name: "role_id",
+            type: "input",
+            message: "What is the role id of the new Employee?"
+        },
+        {
+            name: "manager_id",
+            type: "input",
+            message: "What is the manager id of the new Employee?"
+        },
+        ])
+        .then(function(answer) {
+            connection.query(
+                "INSERT INTO Employees SET ?",
+                {
+                    first_name: answer.first_name,
+                    last_name: answer.last_name,
+                    role_id: answer.role_id,
+                    manager_id: answer.manager_id
+                },
+                function(err) {
+                    if (err) throw err;
+                    console.log("Your Employee was created successfully!");
+                    // re-prompt the user for if they want to bid or post
+                    start();
+                }
+            )
+        })
+}
+
 function updateChoices() {
     inquirer
         .prompt({
@@ -165,7 +241,7 @@ function updateChoices() {
             ]
         })
         .then(function(answer) {
-            switch (answer.action) {
+            switch (answer.updateChoices) {
             case "Departments":
                 updateDepartments();
                 break;
@@ -199,7 +275,7 @@ function deleteChoices() {
             ]
         })
         .then(function(answer) {
-            switch (answer.action) {
+            switch (answer.deleteChoices) {
             case "Departments":
                 deleteDepartments();
                 break;
