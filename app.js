@@ -265,39 +265,41 @@ function createEmployees() {
         })
 }
 
+
+
+
 function updateChoices() {
-    inquirer
-        .prompt({
-            name: "updateChoices",
-            type: "list",
-            message: "What would you like to update?",
-            choices: [
-                "Departments",
-                "Roles",
-                "Employees",
-                "exit"
-            ]
-        })
-        .then(function(answer) {
-            switch (answer.updateChoices) {
-            case "Departments":
-                updateDepartments();
-                break;
-
-            case "Roles":
-                updateRoles();
-                break;
-
-            case "Employees":
-                updateEmployees();
-                break;
-
-            case "Exit":
-                connection.end();
-                break;
+    connection.query("SELECT * FROM Employees", function(err, results) {
+        if (err) throw err;
+        
+        inquirer
+            .prompt([
+            {
+                name: "choice",
+                type: "rawlist",
+                choices: function() {
+                    var empArray = [];
+                    for (var i =0; i < results.length; i++) {
+                        empArray.push(results[i].first_name)
+                    }
+                    return empArray;
+                },
+                // message: "Which Emp's role would you like to update?",
             }
-        });
+        ])
+        // .then(function(answer) {
+            
+        // });
+    })
 }
+
+
+
+
+
+
+
+
 
 function deleteChoices() {
     inquirer
