@@ -3,7 +3,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const cTable = require("console.table");
 
-require('events').EventEmitter.defaultMaxListeners = 15;
+require('events').EventEmitter.defaultMaxListeners = 200;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -170,9 +170,11 @@ function createDepartments() {
         .then(function(answer) {
             connection.query(
                 "INSERT INTO Departments SET ?",
-                {
-                    name: answer.newDept
-                },
+                [
+                    {
+                        name: answer.newDept
+                    },
+                ],
                 function(err) {
                     if (err) throw err;
                     console.log("Your Dept was created successfully!");
@@ -206,11 +208,13 @@ function createRoles() {
         .then(function(answer) {
             connection.query(
                 "INSERT INTO Roles SET ?",
-                {
-                    title: answer.title,
-                    salary: answer.salary,
-                    department_id: answer.department_id,
-                },
+                [
+                    {
+                        title: answer.title,
+                        salary: answer.salary,
+                        department_id: answer.department_id,
+                    },
+                ],
                 function(err) {
                     if (err) throw err;
                     console.log("Your Role was created successfully!");
@@ -249,12 +253,14 @@ function createEmployees() {
         .then(function(answer) {
             connection.query(
                 "INSERT INTO Employees SET ?",
-                {
-                    first_name: answer.first_name,
-                    last_name: answer.last_name,
-                    role_id: answer.role_id,
-                    manager_id: answer.manager_id
-                },
+                [
+                    {
+                        first_name: answer.first_name,
+                        last_name: answer.last_name,
+                        role_id: answer.role_id,
+                        manager_id: answer.manager_id
+                    },
+                ],
                 function(err) {
                     if (err) throw err;
                     console.log("Your Employee was created successfully!");
@@ -285,21 +291,40 @@ function updateChoices() {
                     return empArray;
                 },
                 // message: "Which Emp's role would you like to update?",
+            },
+            {
+                name: "role_id",
+                type: "input",
+                message: "What is the new role id of the selected Employee?"
             }
         ])
-        // .then(function(answer) {
-            
-        // });
+        .then(function(answer) {
+            var chosenName;
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].first_name === answer.choice) {
+                chosenName = results[i];
+                }
+            }
+            connection.query(
+                "UPDATE Employees SET ? WHERE ?",
+                [
+                    {
+                        role_id: answer.role_id
+                    },
+                    {
+                        first_name: chosenName
+                    }
+                ],
+                function(err) {
+                    if (err) throw err;
+                    console.log("Your Employee was created successfully!");
+                    // re-prompt the user for if they want to bid or post
+                    start();
+                }
+            )
+        });
     })
 }
-
-
-
-
-
-
-
-
 
 function deleteChoices() {
     inquirer
@@ -333,6 +358,50 @@ function deleteChoices() {
                 break;
             }
         });
+}
+
+function deleteDepartments() {
+    connection.query("SELECT * FROM Departments", function(err, results) {
+        if (err) throw err;
+        
+        inquirer
+            .prompt([
+            {
+                name: "delChoice",
+                type: "rawlist",
+                choices: function() {
+                    var delDeptArray = [];
+                    for (var i =0; i < results.length; i++) {
+                        delDeptArray.push(results[i].name)
+                    }
+                    return delDeptArray;
+                },
+                // message: "Which Emp's role would you like to update?",
+            }            
+        ])
+        .then(function(answer) {
+            var chosenDept;
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].name === answer.delChoice) {
+                    chosenDept = results[i];
+                }
+            }
+            connection.query(
+                "DELETE FROM Departments WHERE ?",
+                [
+                    {
+                        name: chosenDept
+                    }
+                ],
+                function(err) {
+                    if (err) throw err;
+                    console.log("Your Dept was deleted successfully!");
+                    // re-prompt the user for if they want to bid or post
+                    start();
+                }
+            )
+        })
+    })
 }
 
 
